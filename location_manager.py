@@ -1,5 +1,5 @@
 from campus import Campus, Location, Connection
-from data_structures import ArraySortedList, LinkedList, BinarySearchTree, LinkedQueue, LinkedStack
+from data_structures import ArraySortedList, LinkedList, BinarySearchTree, LinkedQueue, LinkedStack, ArrayList
 from data_structures.node_binary import BinaryNode
 
 class LocationManager:
@@ -27,55 +27,54 @@ class LocationManager:
             desirability = round(reward / (1 + avg_diff), 2)
             location_desireability_sorted.add((desirability, location.get_name()))
 
+        self.tree_root = BinarySearchTree()
+
         def create_binary_tree_aux(location_desireability_sorted: tuple, i: int, j: int) -> BinaryNode:
             if i > j:
                 return None
             mid = (i+j)//2
             location = location_desireability_sorted[mid]
-            node = BinaryNode(location)
-            node.left = create_binary_tree_aux(location_desireability_sorted, i, mid-1)
-            node.right = create_binary_tree_aux(location_desireability_sorted, mid+1, j)
-            return node
+            self.tree_root[-location[0]] = location[1]
+            create_binary_tree_aux(location_desireability_sorted, i, mid-1)
+            create_binary_tree_aux(location_desireability_sorted, mid+1, j)
 
-        self.location_desireability_tree = create_binary_tree_aux(location_desireability_sorted, 0, len(location_desireability_sorted)-1)
+        create_binary_tree_aux(location_desireability_sorted, 0, len(location_desireability_sorted)-1)
 
     def get_locations_in_range(self, min_score, max_score):
         """
         Analyse your time complexity of this method.
         """
         ranged_location_desireability = LinkedList()
-        def get_locations_in_range_aux(node: BinaryNode) -> None:
-            if node:
-                get_locations_in_range_aux(node.left)
-                
-                if node.item[0] >= min_score and node.item[0] <= max_score:
-                    ranged_location_desireability.append(node.item)
-                
-                get_locations_in_range_aux(node.right)
-        get_locations_in_range_aux(self.location_desireability_tree)
+        for node in self.tree_root:
+            if -node[0] >= min_score and -node[0] <= max_score:
+                ranged_location_desireability.insert(0, (-node[0], node[1]))
         return ranged_location_desireability
 
     def get_top_k_locations(self, k):
         """
         Analyse your time complexity of this method.
-        """
+        """        
         top_k_location_desireability = LinkedList()
-        def get_top_k_locations_aux(node: BinaryNode):
-            if node:
-                counter = get_top_k_locations_aux(node.right)
-                if counter > 0:
-                    top_k_location_desireability.append(node.item)
-                return counter-1
+
+        if k == 0:
+            return top_k_location_desireability
+
+        for node in self.tree_root:
+            if len(top_k_location_desireability) == k:
+                if -node[0] <= top_k_location_desireability[0][0]:
+                    break
+                top_k_location_desireability.delete_at_index(len(top_k_location_desireability)-1)
+                top_k_location_desireability.append((-node[0], node[1]))
             else:
-                return k
-        get_top_k_locations_aux(self.location_desireability_tree)
+                top_k_location_desireability.append((-node[0], node[1]))
+ 
         return top_k_location_desireability
 
     def update_location(self, name, new_reward):
         """
         Analyse your time complexity of this method.
         """
-        pass
+        
 
     def __str__(self):
         """
@@ -85,7 +84,6 @@ class LocationManager:
 
 if __name__ == '__main__':
     location_manager = LocationManager('clayton')
-    print(location_manager.location_desireability_tree)
     print()
     print(location_manager.get_locations_in_range(2.4, 6))
     print()
