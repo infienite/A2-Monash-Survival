@@ -5,49 +5,75 @@ class Exploration:
     def __init__(self, campus_name):
         self.campus = Campus(campus_name)
 
-    def greedy_student(self, location, stamina):
+    def greedy_student(self, location: Location, stamina: int):
         """
         Analyse your time complexity of this method.
         """
-        total_reward = 0
+        conns = location.get_connections()
+        if stamina == 0 or len(conns) == 0:
+            return location.get_reward()
         
-        cur_location: Location = location
+        temp: Connection = conns.delete_at_index(0)
+        next_conn: Connection = temp
 
-        while cur_location and stamina >= 0:
-        
-            connections = cur_location.get_connections()
-        
-            total_reward += cur_location.get_reward()
-            
-            temp: Connection = connections.delete_at_index(0)
-        
-            next_connection: Connection = temp
-            
-            for connection in connections:
-                
-                if connection.get_difficulty() == next_connection.get_difficulty() \
-                    and connection.get_location().get_reward() > next_connection.get_location().get_reward() \
-                    or connection.get_difficulty() < next_connection.get_difficulty():
-                    next_connection = connection
+        for conn in conns:
+            if conn.get_difficulty() == next_conn.get_difficulty() \
+                and conn.get_location().get_reward() > next_conn.get_location().get_reward() \
+                or conn.get_difficulty() < next_conn.get_difficulty():
+                next_conn = conn
 
+        conns.insert(0, temp)
 
-            connections.insert(0, temp)
-            cur_location = next_connection.get_location()
-            stamina -= 1
+        return location.get_reward() + self.greedy_student(next_conn.get_location(), stamina-1)
 
-        return total_reward
-
-    def total_difficulty(self, location):
+    def total_difficulty(self, location: Location):
         """
         Time complexity analysis not required for this method.
         """
-        pass
 
-    def total_reward_for_longest_path(self, location):
+        def total_difficulty_aux(location: Location, prev_total_diff: int):
+            
+            conns = location.get_connections()
+
+            if len(conns) == 0:
+                return prev_total_diff
+
+            total_diff = 0
+            for conn in conns:
+                conn: Connection = conn
+                total_diff += total_difficulty_aux(conn.get_location(), prev_total_diff + conn.get_difficulty())
+
+            return total_diff
+
+        return total_difficulty_aux(location, 0)
+
+
+    def total_reward_for_longest_path(self, location: Location):
         """
         Time complexity analysis not required for this method.
         """
-        pass
+        def total_reward_for_longest_path_aux(location: Location, length: int, total_reward: int=0):
+            
+            conns = location.get_connections()
+
+            if len(conns) == 0:
+                return (length, total_reward + location.get_reward())
+            
+            temp: Connection = conns.delete_at_index(0)
+            ml, mr = total_reward_for_longest_path_aux(temp.get_location(), length+1, total_reward + location.get_reward())
+            
+            for conn in conns:
+                conn: Connection = conn
+                l, r = total_reward_for_longest_path_aux(conn.get_location(), length+1, total_reward + location.get_reward())
+                if l == ml and r > mr or l > ml:
+                    ml = l
+                    mr = r
+            
+            conns.insert(0, temp)
+
+            return (ml, mr)
+
+        return total_reward_for_longest_path_aux(location, 1)[1]
 
     def __str__(self):
         """
@@ -65,6 +91,8 @@ if __name__ == '__main__':
     # print(clayton.campus.get_location_by_name('Menzies Building'))
     print(clayton.greedy_student(clayton.campus.get_location_by_name('Menzies Building'), 1))
     print(clayton.greedy_student(clayton.campus.get_location_by_name('Campus Centre'), 2))
+    print(clayton.total_difficulty(clayton.campus.get_location_by_name('Learning and Teaching Building')))
+    print(clayton.total_reward_for_longest_path(clayton.campus.get_location_by_name('Menzies Building')))
     # menzies = clayton.campus.get_location_by_name('Menzies Building')
     # conn = menzies.get_connections()
     # print(conn.delete_at_index(0))
@@ -80,8 +108,8 @@ if __name__ == '__main__':
     #     print(campus_location)
 
     # Sample test cases
-    # assert clayton.greedy_student(clayton.campus.get_location_by_name('Menzies Building'), 1) == 22, "Greedy student should collect 22 reward"
-    # assert clayton.total_difficulty(clayton.campus.get_start_location()) == 190, "Total difficulty should be 190"
-    # assert clayton.total_reward_for_longest_path(clayton.campus.get_start_location()) == 86, "Longest path should be 86"
+    assert clayton.greedy_student(clayton.campus.get_location_by_name('Menzies Building'), 1) == 22, "Greedy student should collect 22 reward"
+    assert clayton.total_difficulty(clayton.campus.get_start_location()) == 190, "Total difficulty should be 190"
+    assert clayton.total_reward_for_longest_path(clayton.campus.get_start_location()) == 86, "Longest path should be 86"
 
     # Add test code here
