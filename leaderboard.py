@@ -46,11 +46,7 @@ class Leaderboard:
             combined_players.append(player_j)
             j += 1
         
-        self.players = combined_players
-        
-        for player in self.players:
-            print(player)
-        
+        self.players = combined_players        
 
     def __str__(self):
         """
