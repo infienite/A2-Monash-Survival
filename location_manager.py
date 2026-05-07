@@ -47,7 +47,9 @@ class LocationManager:
         """
         ranged_location_desireability = LinkedList()
         for node in self.tree_root:
-            if node[1] >= min_score and node[1] <= max_score:
+            if node[1] >= min_score:
+                if node[1] > max_score:
+                    break
                 ranged_location_desireability.insert(0, (node[1], node[0][1]))
         return ranged_location_desireability
 
