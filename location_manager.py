@@ -75,20 +75,15 @@ class LocationManager:
         """
         Analyse your time complexity of this method.
         """
-        for n in self.tree_root:
-            print(n)
         desireability = self.lookup[name]
         key = (-desireability, name)
         del self.tree_root[key]
         loc: Location = self.campus.get_location_by_name(name)
         avg_diff = loc.get_reward() / desireability - 1
-        print(avg_diff)
         loc.set_reward(new_reward)
         desirability = round(new_reward / (1 + avg_diff), 2)
         nkey = (-desirability, name)
         self.tree_root[nkey] = desirability
-        for n in self.tree_root:
-            print(n)
         
     def __str__(self):
         """
