@@ -1,5 +1,5 @@
 from campus import Campus, Location, Connection
-from data_structures import ArraySortedList, LinkedList, BinarySearchTree, LinkedQueue, LinkedStack, ArrayList
+from data_structures import ArraySortedList, LinkedList, BinarySearchTree, LinkedQueue, LinkedStack, ArrayList, HashTableSeparateChaining
 from data_structures.node_binary import BinaryNode
 
 class LocationManager:
@@ -7,13 +7,13 @@ class LocationManager:
         """
         Analyse your time complexity of this method.
         """
-            
-        
+
         self.campus: Campus = Campus(campus_name)
         
         all_location = self.campus.get_all_locations()
 
         location_desireability_sorted = ArraySortedList(len(all_location))
+        self.lookup = HashTableSeparateChaining(len(all_location))
 
         for location in all_location:
             location: Location = location
@@ -26,15 +26,16 @@ class LocationManager:
             reward = location.get_reward()
             desirability = round(reward / (1 + avg_diff), 2)
             location_desireability_sorted.add((desirability, location.get_name()))
+            self.lookup.insert(location.get_name(), desirability)
 
         self.tree_root = BinarySearchTree()
 
         def create_binary_tree_aux(location_desireability_sorted: tuple, i: int, j: int) -> BinaryNode:
             if i > j:
-                return None
+                return
             mid = (i+j)//2
             location = location_desireability_sorted[mid]
-            self.tree_root[-location[0]] = location[1]
+            self.tree_root[(-location[0], location[1])] = location[0]
             create_binary_tree_aux(location_desireability_sorted, i, mid-1)
             create_binary_tree_aux(location_desireability_sorted, mid+1, j)
 
@@ -46,8 +47,8 @@ class LocationManager:
         """
         ranged_location_desireability = LinkedList()
         for node in self.tree_root:
-            if -node[0] >= min_score and -node[0] <= max_score:
-                ranged_location_desireability.insert(0, (-node[0], node[1]))
+            if node[1] >= min_score and node[1] <= max_score:
+                ranged_location_desireability.insert(0, (node[1], node[0][1]))
         return ranged_location_desireability
 
     def get_top_k_locations(self, k):
@@ -61,12 +62,12 @@ class LocationManager:
 
         for node in self.tree_root:
             if len(top_k_location_desireability) == k:
-                if -node[0] <= top_k_location_desireability[0][0]:
+                if node[1] <= top_k_location_desireability[0][0]:
                     break
                 top_k_location_desireability.delete_at_index(len(top_k_location_desireability)-1)
-                top_k_location_desireability.append((-node[0], node[1]))
+                top_k_location_desireability.append((node[1], node[0][1]))
             else:
-                top_k_location_desireability.append((-node[0], node[1]))
+                top_k_location_desireability.append((node[1], node[0][1]))
  
         return top_k_location_desireability
 
@@ -74,8 +75,21 @@ class LocationManager:
         """
         Analyse your time complexity of this method.
         """
+        for n in self.tree_root:
+            print(n)
+        desireability = self.lookup[name]
+        key = (-desireability, name)
+        del self.tree_root[key]
+        loc: Location = self.campus.get_location_by_name(name)
+        avg_diff = loc.get_reward() / desireability - 1
+        print(avg_diff)
+        loc.set_reward(new_reward)
+        desirability = round(new_reward / (1 + avg_diff), 2)
+        nkey = (-desirability, name)
+        self.tree_root[nkey] = desirability
+        for n in self.tree_root:
+            print(n)
         
-
     def __str__(self):
         """
         Optional: For debugging purposes only
@@ -87,5 +101,6 @@ if __name__ == '__main__':
     print()
     print(location_manager.get_locations_in_range(2.4, 6))
     print()
-    print(location_manager.get_top_k_locations(3))
+    print(location_manager.get_top_k_locations(4))
+    print(location_manager.update_location('New Horizons', 1000))
     # Add test code here
