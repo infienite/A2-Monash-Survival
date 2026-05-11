@@ -1,38 +1,77 @@
 from campus import LeaderboardReader, Player
-from algorithms import quick_sort, merge_sort
-from data_structures import ArrayList, LinkedList, LinkedStack, ArrayR, LinkedQueue
+from algorithms import merge_sort
+from data_structures import ArrayList
+
+
+def is_leaderboard_sorted(leaderboard: ArrayList[Player]) -> bool:
+    """ Checks whether the leaderboard is already sorted. Returns `True` if the leaderboard is sorted. Else, return `False`. """
+    
+    # Set the initial score and stamina as a very big number
+    prev_score, prev_stamina = float('inf'), float('inf')
+
+    # Checks loop invariant holds or not at each iteration
+    for i in range(len(leaderboard)):
+        
+        # Get player score and stamina
+        player_i = leaderboard[i]
+        cur_score, cur_stamina = player_i.score, player_i.stamina
+
+        # Loop invariant. The current score and stamina must be strictly less than or equal to the previous score and stamina.
+        if cur_score <= prev_score and cur_stamina <= prev_stamina:
+            
+            # Keeps updating the value to compare next element with the current element
+            prev_score = cur_score
+            prev_stamina = cur_stamina
+
+        else:
+            # Loop invariant breached
+            return False
+    
+    # All loop invariant fulfilled
+    return True
+
 
 class Leaderboard:
     def __init__(self, campus_name):
         """
-        Analyse your time complexity of this method.
+        Best case time complexity is O(N) where N is the length of the list.
+        Best case happens when the leaderboard is already sorted in descending order based on
+        score and stamina. The is_leaderboard_sorted will check if the leaderboard is already
+        sorted in the correct order. When the leaderboard is sorted, it will halt early. Thus,
+        elements are iterated N times to check the sorted status and halts.
+
+        Worst case time complexity is O(N log N) where N is the length of the list.
+        Worst case happens when the leaderboard undergoes mergesort operation. The list will
+        be divided by half until each partition becomes pair of 2 elements. This takes about
+        O(N log N) as the length of the list is divided by 2 each iteration and in each 
+        iteration, all N elements are visited to be copied into a new, smaller array. The merge
+        operation takes O(N) time as in each iteration, the each element of the array
+        will be merged into a bigger array. As the array length starts expanding by a factor of
+        2 as more elements merge, the final array can be achieved in O(log N) steps of
+        iteration. So, it takes O(N log N) as well.
         """
-        list_of_players: ArrayList[Player] = LeaderboardReader.read(campus_name)
-        
-        list_of_players = merge_sort.merge_sort(list_of_players, lambda p: (p.score, p.stamina))
 
-        n = len(list_of_players)
-        desc = ArrayList(n)
-        queue = LinkedStack()
-        queue.push(list_of_players[-1])
-        for i in range(1, n):
-            p: Player = list_of_players[n-i-1]
-            prev_p: Player = queue.peek()
-            if (p.score, p.stamina) != (prev_p.score, prev_p.stamina):
-                while not queue.is_empty():
-                    desc.append(queue.pop())
-            queue.push(p)
-        while not queue.is_empty():
-            desc.append(queue.pop())
+        # Get leaderboard data
+        self.players: ArrayList[Player] = LeaderboardReader.read(campus_name)
 
-        self.players = desc
+        # Checks whether the leaderboard is already sorted
+        if is_leaderboard_sorted(self.players):
+            return
+
+        # Sort in descending order based on score and stamina 
+        self.players = merge_sort.merge_sort(self.players, lambda p: (-p.score, -p.stamina))
 
     def combine(self, other_leaderboard: Leaderboard):
         """
-        Analyse your time complexity of this method.
+        Best and worst case time complexity is O(N) where N = length of current leaderboard +
+        length of other leaderboard.
+        Best and worst case happens when both leaderboard lists are sorted descendingly from the
+        player with the highest score and stamina to the lowest. Each element is only visited
+        once and added to the final list which contains the combined leaderboard in descending
+        order. 
         """
+        # Merge two leaderboards
         self.players = merge_sort.merge(self.players, other_leaderboard.players, lambda p: (-p.score, -p.stamina))
-
 
     def __str__(self):
         """
@@ -61,7 +100,7 @@ if __name__ == "__main__":
     for player in leaderboard.players:
         print(player)
     other_leaderboard = Leaderboard("malaysia")
-    print(other_leaderboard.players)
+    # print(other_leaderboard.players)
 
     leaderboard.combine(other_leaderboard)
     for player in leaderboard.players:
