@@ -26,16 +26,15 @@ class Exploration:
         Best case happens when the first location does not have any connection to other location.
         This will run the function only once regardless of the number of stamina.
 
-        Worst case time complexity is O(N*C), where N is the number of location visited until the
-        stamina finish or the last location has 0 connection and C is the number of connections
-        of each location visited.
-        Worst case happens when there are N-1 location which contains connection to other location
-        including the first location. At each location starting from the first location, each of its
-        connections is evaluated in order to find the next location which has the lowest difficulty
-        and highest reward. This process repeats for the remaining N-2 location until reaches the
-        last location which does not have any forward connection to other location or when the
-        stamina is 0. The recursive function then yields which causes previous recursive functions
-        to yield until the final result is calculated and returns to the first function call.
+        Worst case time complexity is O(N+C), where N is the number of location visited until the
+        stamina finish or the last location has 0 connection and C is the total number of connections
+        of all location visited.
+        Worst case happens when there are N locations which contains connection to other location.
+        At each location starting from the first location, connection are evaluated Ci times,
+        where i represent the node number and Ci represent the number of connections of node i,
+        in order to find the next location which has the lowest difficulty and highest reward.
+        This process repeats for the all locations until reaches the last location which have
+        0 connection to other location or when the stamina is 0.
         """
         
         # Validate arguments
