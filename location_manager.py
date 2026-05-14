@@ -115,26 +115,16 @@ class LocationManager:
         # Output list
         locations_in_range = LinkedList()
 
-        def get_locations_in_range_aux(node: BinaryNode) -> None:
-            # Checks whether node's key value is in between score range
-            if node:
+        for location in self.location_search_tree:
 
-                # Inorder traversal by visiting all left child first
-                get_locations_in_range_aux(node.left)
-                
-                # Base case. Key is larger than the max score
-                if node.key > max_score:
-                    return
-                
-                # When key is in range, append to output list
-                if node.key >= min_score:
-                    locations_in_range.append((node.key, node.item.get_name()))
-                
-                # Visit the right child only after visiting the left child and the parent
-                get_locations_in_range_aux(node.right)
-
-        # The accumulator function perform computation and updates the output list
-        get_locations_in_range_aux(self.location_search_tree._root)
+            # Base case. Key is larger than the max score
+            if location[0] > max_score:
+                break
+            
+            # When key is in range, append to output list
+            if location[0] >= min_score:
+                locations_in_range.append((location[0], location[1].get_name()))
+        
         return locations_in_range
 
     def get_top_k_locations(self, k):
@@ -145,7 +135,7 @@ class LocationManager:
         Best and worst case happens when the search happens from the root of the tree to the rightmost
         leaf from the root which takes O(log N) time. Since the rightmost leaf contains the largest
         desirability value, the function adds the leaf node to the output list. Then, the function
-        returns the counter for the previous function call to signal that k-1 location has been added
+        returns the counter for the previous function call to signal that k-1 location need to be added
         to the output list. This process happens for K time in total. After the final top location
         has been added, the function will stop adding location to the output list.
         """
@@ -188,7 +178,9 @@ class LocationManager:
         Worst case happens when the new reward cause the tree to be updated. Updating the tree
         requires deleting the location with the old desirability value and inserting the location
         with the new desirability value. It takes O(log N) to delete the node and add them back
-        into the tree as a traversal need to be done for both tree operations.
+        into the tree as a traversal need to be done for both tree operations which traverse about
+        log N nodes to find the element to be deleted and the position of the new element to be added
+        respectively.
         """
         # Check whether the name exist inside the tree
         try:
@@ -228,7 +220,7 @@ class LocationManager:
 if __name__ == '__main__':
     location_manager = LocationManager('clayton')
     print()
-    print(location_manager.get_locations_in_range(1.5, 6))
+    print(location_manager.get_locations_in_range(0, 0.86))
     print()
     print(location_manager.get_top_k_locations(4))
     location_manager.update_location('Law Building and Library', 14)
