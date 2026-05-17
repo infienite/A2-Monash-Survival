@@ -4,14 +4,16 @@ from reward_structure import UniqueArrayMaxHeap
 
 
 def get_heap_key(location: Location):
-    """ Take the location `reward` and `name` as heap key.  """
+    """Take the location `reward` and `name` as heap key."""
     return (location.get_reward(), location.get_name())
 
 
-def validate_k_argument(k: int, ):
-    """ Validate `k` argument. `k` must be a positive integer. """
-    if type(k) != int and k < 0:
-        raise ValueError('k argument must be a positive integer')
+def validate_k_argument(
+    k: int,
+):
+    """Validate `k` argument. `k` must be a positive integer."""
+    if type(k) != int or k < 0:
+        raise ValueError("k argument must be a positive integer")
 
 
 class RewardSeeker:
@@ -38,7 +40,7 @@ class RewardSeeker:
             i += 1
 
         # Initialize max heap
-        self.reward_max_heap = UniqueArrayMaxHeap(len(all_locations), all_locations_arr)
+        self.reward_max_heap = UniqueArrayMaxHeap.heapify(all_locations_arr)
 
     def get_next_location(self):
         """
@@ -48,10 +50,10 @@ class RewardSeeker:
         element is always at the root of the heap and takes O(1). The removal of the element
         causes sink operation to be performed in order to maintain heap invariant of the
         maximum element being at the top of the max heap. Sink operation takes O(log N)
-        as the the tree is traversed at log N level.  
+        as the the tree is traversed at log N level.
         """
         # Get max element inside the heap
-        return self.reward_max_heap.get_max()
+        return self.reward_max_heap.extract_root()
 
     def get_top_k_locations(self, k):
         """
@@ -66,13 +68,13 @@ class RewardSeeker:
 
         # Output list
         top_k_locations = LinkedList()
-        
+
         # Call get max for k time if k < N. Else call for N time.
         for _ in range(k):
             # Add location if the heap is not empty
             try:
-                top_k_locations.append(self.reward_max_heap.get_max())
-            except IndexError:
+                top_k_locations.append(self.reward_max_heap.extract_root())
+            except ValueError:
                 break
 
         # Return output list
@@ -93,7 +95,7 @@ class RewardSeeker:
         its child up to log N times or the depth of the tree until reaches the correct position.
         """
         # Get location by name
-        location = self.campus.get_location_by_name(location_name)        
+        location = self.campus.get_location_by_name(location_name)
         current_key = get_heap_key(location)
 
         # Update location reward
@@ -101,18 +103,18 @@ class RewardSeeker:
 
         # Get new key of
         new_key = get_heap_key(location)
-        
+
         # Update the new reward inside the max heap
         self.reward_max_heap.update(current_key, new_key)
 
 
-if __name__ == '__main__':
-    reward_seeker = RewardSeeker('clayton')
+if __name__ == "__main__":
+    reward_seeker = RewardSeeker("clayton")
 
     print(reward_seeker.get_next_location())
     # reward_seeker.update_location_reward('Monash Club', 1000)
     print(reward_seeker.get_top_k_locations(3))
-    reward_seeker.update_location_reward('Campus Centre', 100)
+    reward_seeker.update_location_reward("Campus Centre", 100)
     print(reward_seeker.get_top_k_locations(2))
 
     # Add test code here
