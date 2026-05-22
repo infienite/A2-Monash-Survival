@@ -104,20 +104,20 @@ if __name__ == "__main__":
     # for player in leaderboard.players:
     #     print(player)
 
-    # ids = [4,7,2,10,8,3,1,6,9,5]
-    # for i in range(len(leaderboard.players)):
-    #     assert ids[i] == leaderboard.players[i].id
+    ids = [4,7,2,10,8,3,1,6,9,5]
+    for i in range(len(leaderboard.players)):
+        assert ids[i] == leaderboard.players[i].id
 
-    # other_leaderboard = Leaderboard("malaysia")
-    # # print(other_leaderboard.players)
-    # ids = [20,17,12,16,14,11,18,13,19,15]
-    # for i in range(len(other_leaderboard.players)):
-    #     assert ids[i] == other_leaderboard.players[i].id
+    other_leaderboard = Leaderboard("malaysia")
+    # print(other_leaderboard.players)
+    ids = [20,17,12,16,14,11,18,13,19,15]
+    for i in range(len(other_leaderboard.players)):
+        assert ids[i] == other_leaderboard.players[i].id
 
-    # leaderboard.combine(other_leaderboard)
+    leaderboard.combine(other_leaderboard)
     # for player in leaderboard.players:
     #     print(player)
 
-    # ids = [4, 7, 2, 20, 17, 12,10,16,8,14,11,3,18,1,6,13,9,19,15,5]
-    # for i in range(len(leaderboard.players)):
-    #     assert ids[i] == leaderboard.players[i].id
+    ids = [4, 7, 2, 20, 17, 12,10,16,8,14,11,3,18,1,6,13,9,19,15,5]
+    for i in range(len(leaderboard.players)):
+        assert ids[i] == leaderboard.players[i].id
