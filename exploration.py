@@ -194,6 +194,7 @@ if __name__ == "__main__":
     # assert clayton.total_difficulty(clayton.campus.get_start_location()) == 190, "Total difficulty should be 190"
     assert clayton.total_reward_for_longest_path(clayton.campus.get_start_location()) == 86, "Longest path should be 86"
     assert clayton.total_reward_for_longest_path(clayton.campus.get_start_location()) == 86, "Longest path should be 86"
+    print(clayton.total_reward_for_longest_path(clayton.campus.get_location_by_name('Monash Club')))
     # assert clayton.greedy_student(clayton.campus.get_location_by_name('New Horizons'), 3) == 13, "Greedy student should collect 13 reward"
 
     # Add test code here
