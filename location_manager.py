@@ -34,7 +34,7 @@ def validate_score_argument(score: int | float):
 
 
 def validate_k_argument(k: int, num_of_locations: int):
-    """Raise value error if k is invalid type ."""
+    """Raise value error if k is invalid type."""
     if type(k) != int or not (k > 0 and k <= num_of_locations):
         raise ValueError(
             f"k argument must be a positive integer whose value is between 1 and {num_of_locations}."
@@ -46,13 +46,14 @@ class LocationManager:
         """
         Best and worst case time complexity is O(C + N log N) where N is the number of locations while C is the number of
         connections of the campus.
-        Best and worst case happens when there are N interconnected locations and C connections. The function will
-        calculate the desirability of each location which requires iterating through all N locations and in each
-        of the iteration, the function will loop through all connection's difficulty level Ci times in total where
-        i represent node i and Ci represent the number of connection of node i. After that, the function will run
-        mergesort on location list, costing O(N log N) before creating the Binary Search Tree. The function finally
-        creates the Binary Search Tree, costing O(N log N) to create each location representation inside the tree
-        and arranging them at the correct position inside the tree.
+        Best and worst case happens when there are N locations and C connections. The function calculates the
+        desirability of N locations. Each location have Ci connections where i is the ith node and Ci is the
+        number of connections at node i. In total, C1 + C2 + ... + Ci is equal to C. Thus, the operation takes
+        O(C+N) time. After that, the function sorts the location list using merge sort. This function takes 
+        O(N log N) time to sort all locations inside the list based on the desirability value. Lastly, the
+        function creates Binary Search Tree from the sorted location list taking desirability as the key taking
+        O(N log N) time in order to insert N elements which takes O(log N) time in each insertion. So, the function
+        takes O(C + N log N) time in best and worst case time complexity.
         """
         # Get campus data
         self.campus: Campus = Campus(campus_name)
@@ -78,7 +79,7 @@ class LocationManager:
         def create_binary_tree_aux(
             sorted_location: ArrayList[Location], i: int, j: int
         ) -> BinaryNode:
-            """Builds binary tree by taking middle element as the root, then divides the list into left and right partitions as left and right child respectively."""
+            """Builds a balanced binary tree by taking middle element as the root, then divides the list into left and right partitions and taking the middle elements of each partition as the left and right child respectively until all elements has been added into the tree."""
             # Base case. The left index is more than right index.
             if i > j:
                 return None
@@ -113,13 +114,11 @@ class LocationManager:
         """
         Best case time complexity is O(1).
         Best case happens when the root of the tree has `root.key > max_score` which halts the
-        function early without going through its left and right child and so on. The function
-        run only once.
+        function early without going through its left and right child.
 
-        Worst case time complexity is O(N) where N is the number of nodes inside the tree.
-        Worst case happens when all nodes inside the tree have `min_score < node.key < max_score`.
-        The function will visit all nodes inside the tree in inorder traversal pattern for
-        N times.
+        Worst case time complexity is O(N) where N is the number of locations inside the tree.
+        Worst case happens when all locations inside the tree have `min_score <= desirability <= max_score`.
+        The function visits all N locations inside the tree using inorder traversal.
         """
         # Validate arguments
         validate_score_argument(min_score)
@@ -145,13 +144,12 @@ class LocationManager:
         Best and worst case time complexity is O(K + log N) where K is the integer representing
         the number of locations to return from the function and N is the number of locations inside
         the tree.
-        Best and worst case happens when the search happens when the root of the tree is traversed to the
-        rightmost leaf from the root which takes O(log N) time. Since the rightmost leaf contains the largest
-        desirability value, the function adds the leaf node to the output list. Then, the function
-        returns counter-1 to the previous function call to signal that counter-1 location left needed to
-        be added to the output list. After that, the left node is visited if coutner-1 > 0. This process
-        happens for K time in total. After the final top location has been added, the function will stop adding 
-        location to the output list and stop visiting left node.
+        Best and worst case happens when the root of the tree is traversed to the right most leave
+        of the tree. The rightmost leaf contains the location which have the largest desirability value.
+        This takes O(log N) time. Then, the function adds the location into an output list and traverse
+        to the next location with the largest desirability value. This process repeats for K times until
+        all top K locations has been added to the output list. As a result, the function takes O(K + log N)
+        time in the best and worst case time complexity.
         """
         # Validate argument
         validate_k_argument(k, len(self.location_search_tree))
@@ -187,15 +185,15 @@ class LocationManager:
         """
         Best case time complexity is O(1).
         Best case happens when the the new reward of the location is equal to the current reward
-        of the location. The function halts early and the tree is not updated.
+        of the location. The function halts early.
 
         Worst case time complexity is O(log N) where N is the number of locations inside the tree.
-        Worst case happens when the new reward cause the tree to be updated. Updating the tree
-        requires deleting the location with the old desirability value and inserting the location
-        with the new desirability value. It takes O(log N) to delete the node and add them back
-        into the tree as a traversal need to be done for both tree operations which traverse about
-        log N nodes to find the element to be deleted and the position of the new element to be added
-        respectively.
+        Worst case happens when the new reward is different from the current reward. The function
+        calculates a new desirability value using pre-calculated average difficulty value. As a
+        result, calculating the new desirability takes O(1) time. Then, the function deletes the
+        location with the old desirability value. This takes O(log N) time. After that, the function
+        adds the new location with new desirability value. This takes O(log N) time. As a result,
+        the function takes O(log N) time to update the location reward.
         """
         # Check whether the name exist inside the tree
         try:
@@ -214,8 +212,11 @@ class LocationManager:
         # Update location reward
         location.set_reward(new_reward)
 
-        # Calculate new desirability
-        new_desirability = calculate_desirability(location)
+        # Calculate avg difficulty based on modified formula. Avg diff = reward / desirability - 1 
+        avg_diff = reward / desirability - 1
+        
+        # Calculate the new desirability
+        new_desirability = round(new_reward / (1 + avg_diff), 2)
 
         # Delete the old location by old desirability
         del self.location_search_tree[desirability]
