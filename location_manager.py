@@ -48,12 +48,12 @@ class LocationManager:
         connections of the campus.
         Best and worst case happens when there are N locations and C connections. The function calculates the
         desirability of N locations. Each location have Ci connections where i is the ith node and Ci is the
-        number of connections at node i. In total, C1 + C2 + ... + Ci is equal to C. Thus, the operation takes
-        O(C+N) time. After that, the function sorts the location list using merge sort. This function takes 
-        O(N log N) time to sort all locations inside the list based on the desirability value. Lastly, the
-        function creates Binary Search Tree from the sorted location list taking desirability as the key taking
-        O(N log N) time in order to insert N elements which takes O(log N) time in each insertion. So, the function
-        takes O(C + N log N) time in best and worst case time complexity.
+        number of connections at node i. In total, C1 + C2 + ... + Ci is equal to C. Thus, calculating the
+        desirability takes O(N+C) time. Then, the function sorts the location list using merge sort. It takes
+        O(N log N) to sort the locations. Finally, a Binary Search Tree is created from the sorted location list.
+        The creation of the balanced binary tree takes O(N log N) time because building a binary tree requires
+        inserting N elements. Each insertion takes O(log N) time. So, the function takes O(C+N+N logN) but since
+        N log N is the major term for N, the function is said to have a time complexity of O(C+N log N).
         """
         # Get campus data
         self.campus: Campus = Campus(campus_name)
@@ -107,7 +107,7 @@ class LocationManager:
             all_location_arrlist, key=lambda x: self.desirability_lookup[x.get_name()]
         )
 
-        # Build binary search tree based on desirability as the key
+        # Build balanced binary search tree based on desirability as the key
         create_binary_tree_aux(sorted_locations, 0, len(sorted_locations) - 1)
 
     def get_locations_in_range(self, min_score, max_score):
@@ -142,14 +142,13 @@ class LocationManager:
     def get_top_k_locations(self, k):
         """
         Best and worst case time complexity is O(K + log N) where K is the integer representing
-        the number of locations to return from the function and N is the number of locations inside
-        the tree.
-        Best and worst case happens when the root of the tree is traversed to the right most leave
-        of the tree. The rightmost leaf contains the location which have the largest desirability value.
-        This takes O(log N) time. Then, the function adds the location into an output list and traverse
-        to the next location with the largest desirability value. This process repeats for K times until
-        all top K locations has been added to the output list. As a result, the function takes O(K + log N)
-        time in the best and worst case time complexity.
+        the maximum number of locations to return from the function and N is the number of locations
+        inside the tree.
+        Best and worst case happens when the root of the tree is traversed using reverse inorder
+        traversal. The function traverses to the rightmost node of the tree. Then, K location
+        will be added from the rightmost node to the root of the node and the left child of the
+        root node. Once K locations have been added, the function will no longer traverse to other
+        nodes inside the tree and halts.
         """
         # Validate argument
         validate_k_argument(k, len(self.location_search_tree))
@@ -185,17 +184,15 @@ class LocationManager:
         """
         Best case time complexity is O(1).
         Best case happens when the the new reward of the location is equal to the current reward
-        of the location. The function halts early.
+        of the location. The function halts early because there are no changes to be done towards
+        the tree.
 
         Worst case time complexity is O(log N) where N is the number of locations inside the tree.
-        Worst case happens when the new reward is different from the current reward. The function
-        calculates a new desirability value using pre-calculated average difficulty value. As a
-        result, calculating the new desirability takes O(1) time. Then, the function deletes the
-        location with the old desirability value. This takes O(log N) time. This happens because
-        about log N nodes are traversed in order to find the location with the desirability value.
-        After that, the function adds the new location with new desirability value. This takes
-        O(log N) time as about log N nodes are traversed again in order to find the correct insertion
-        position. As a result, the function takes O(log N) time to update the location reward.
+        Worst case happens when the new reward is different from the current reward. Calculating
+        a new desirability value takes O(1) time by calculating average difficulty from the
+        old reward and desirability value. Then, the location with the old desirability value
+        is deleted from the tree, taking O(log N) time. The same location with a new desirability
+        value is added back into the tree at the correct position taking O(log N) time as well.
         """
         # Check whether the name exist inside the tree
         try:
@@ -238,11 +235,16 @@ class LocationManager:
 
 if __name__ == "__main__":
     location_manager = LocationManager("clayton")
-    print(location_manager.get_locations_in_range(0.87, 1000))
-    print(location_manager.get_top_k_locations(5))
-    location_manager.update_location("Law Building and Library", 14)
-    print(location_manager.get_locations_in_range(0.86, 6))
-    print(location_manager.get_top_k_locations(10))
+    # print(location_manager.get_locations_in_range(0.86, 3))
+    # print()
+    # print(location_manager.get_top_k_locations(10))
+    # print()
+    # location_manager.update_location("Law Building and Library", 14)
+    # print()
+    # print(location_manager.get_locations_in_range(0.86, 6))
+    # print()
+    # print(location_manager.get_top_k_locations(10))
+
 
 
     # Add test code here
