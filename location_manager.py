@@ -191,9 +191,11 @@ class LocationManager:
         Worst case happens when the new reward is different from the current reward. The function
         calculates a new desirability value using pre-calculated average difficulty value. As a
         result, calculating the new desirability takes O(1) time. Then, the function deletes the
-        location with the old desirability value. This takes O(log N) time. After that, the function
-        adds the new location with new desirability value. This takes O(log N) time. As a result,
-        the function takes O(log N) time to update the location reward.
+        location with the old desirability value. This takes O(log N) time. This happens because
+        about log N nodes are traversed in order to find the location with the desirability value.
+        After that, the function adds the new location with new desirability value. This takes
+        O(log N) time as about log N nodes are traversed again in order to find the correct insertion
+        position. As a result, the function takes O(log N) time to update the location reward.
         """
         # Check whether the name exist inside the tree
         try:
