@@ -23,18 +23,21 @@ class Exploration:
     def greedy_student(self, location: Location, stamina: int):
         """
         Best case time complexity is O(1).
-        Best case happens when the first location does not have any connection to other location.
-        This will run the function only once regardless of the number of stamina.
+        Best case happens when the first location has 0 connection to other locations. In this case,
+        the function run once and halts regardless of the number of stamina of the student.
 
         Worst case time complexity is O(N+C), where N is the number of location visited until the
-        stamina finish or the last location has 0 connection and C is the total number of connections
-        outgoing from all visited location.
-        Worst case happens when there are N locations which contains connection to other location.
-        At each location starting from the first location, Ci connections are evaluated, where i
-        represent the node number and Ci represent the number of connections outgoing from node i,
-        in order to find the next location which has the lowest difficulty and highest reward.
-        This process repeats for the next location until reaches the last location which have 0
-        connection to other location or when the stamina is 0.
+        stamina finishes or until a location with 0 connection to other locations. C is the total
+        number of connections outgoing from all locations visited.
+        Worst case happens when there are N locations which contains connection to other location
+        bounded by the number of stamina. At each location starting from the first location, Ci
+        connections are evaluated where i represents the node number and Ci represents the number
+        of connections outgoing from node i. Each connection is evaluated in order to find the
+        next location which has the lowest difficulty and highest reward. This process repeats for
+        N locations until the stamina reaches 0 or the function reaches a location which have 0
+        connection to other locations. As a result, the function takes O(N) time to visit each
+        location and at each location takes O(Ci) time to evaluate each connection. In total,
+        C1 + C2 + ... + Ci is equal to C. Therefore, the function takes O(N+C) time to complete.
         """
 
         # Validate arguments
