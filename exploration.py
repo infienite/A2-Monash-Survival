@@ -31,7 +31,7 @@ class Exploration:
         number of connections outgoing from all locations visited.
         Worst case happens when there are N locations which contains connection to other location
         bounded by the number of stamina. At each location starting from the first location, Ci
-        connections are evaluated where i represents the node number and Ci represents the number
+        connections are evaluated where i represents the ith node and Ci represents the number
         of connections outgoing from node i. Each connection is evaluated in order to find the
         next location which has the lowest difficulty and highest reward. This process repeats for
         N locations until the stamina reaches 0 or the function reaches a location which have 0
