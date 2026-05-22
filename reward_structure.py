@@ -117,7 +117,7 @@ class UniqueArrayMaxHeap(ArrayMaxHeap):
             self._sink(k)
 
         # Delete the old index lookup to the element with the previous value
-        del self._index_lookup[str(elem)]
+        del self._index_lookup[str(elem)] 
 
     def _is_unique(self, elem) -> bool:
         """Return true if element is not inside the heap."""

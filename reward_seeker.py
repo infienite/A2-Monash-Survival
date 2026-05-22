@@ -52,6 +52,10 @@ class RewardSeeker:
         maximum element being at the top of the max heap. Sink operation takes O(log N)
         as the the tree is traversed at log N level.
         """
+        # Return None when the heap is empty
+        if self.reward_max_heap.is_empty():
+            return None
+        
         # Get max element inside the heap
         return self.reward_max_heap.extract_root()
 
@@ -71,11 +75,13 @@ class RewardSeeker:
 
         # Call get max for k time if k < N. Else call for N time.
         for _ in range(k):
-            # Add location if the heap is not empty
-            try:
-                top_k_locations.append(self.reward_max_heap.extract_root())
-            except ValueError:
+
+            # Stop adding location if the heap is empty
+            if self.reward_max_heap.is_empty():
                 break
+
+            # Add location if the heap is not empty
+            top_k_locations.append(self.reward_max_heap.extract_root())
 
         # Return output list
         return top_k_locations
@@ -111,10 +117,10 @@ class RewardSeeker:
 if __name__ == "__main__":
     reward_seeker = RewardSeeker("clayton")
 
-    print(reward_seeker.get_next_location())
-    # reward_seeker.update_location_reward('Monash Club', 1000)
-    print(reward_seeker.get_top_k_locations(3))
-    reward_seeker.update_location_reward("Campus Centre", 100)
-    print(reward_seeker.get_top_k_locations(2))
+    # print(reward_seeker.get_next_location())
+    # # reward_seeker.update_location_reward('Monash Club', 1000)
+    # print(reward_seeker.get_top_k_locations(3))
+    # reward_seeker.update_location_reward("Campus Centre", 100)
+    # print(reward_seeker.get_top_k_locations(2))
 
     # Add test code here
