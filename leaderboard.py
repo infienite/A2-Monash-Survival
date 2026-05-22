@@ -37,22 +37,19 @@ class Leaderboard:
         Best case time complexity is O(N) where N is the number of players in the leaderboard.
         Best case happens when the leaderboard is already sorted in descending order based on
         score and stamina. is_leaderboard_sorted function checks if the leaderboard is already
-        sorted descendingly based on score and stamina. It checks all N players inside the
-        leaderboard. When the leaderboard is sorted, the __init__ function halts early. As a
-        result, the function takes O(N) time to loop through all players in the leaderboard.
+        sorted correctly. It iterates all N players inside the leaderboard. When the leaderboard
+        is sorted, the function halts early.
 
         Worst case time complexity is O(N log N) where N is the number of players in the
         leaderboard.
         Worst case happens when the leaderboard is not sorted. The leaderboard will undergo
         merge sort function in order to sort the list in descending order based on score and
         stamina. The list will be divided by half until each partition becomes pairs of 2 elements.
-        This iteration occurs about log N times and N players are iterated inside the leaderboard
-        in each iteration. As a result, this takes O(N log N) time. After that, the merge operation
-        will sort each pair of element at the correct order and combine with other pair into bigger
-        and bigger partition until all pairs have been merged back into the original list with the
-        correct ordering. The process occur about log N times and N elements are checked in each
-        iteration of the process. Hence, the merge operations take O(N log N) time. Thus, this function
-        takes O(N log N) time.
+        This iteration occurs about log N times and N players are iterated in each iteration. This
+        takes O(N log N) time. The merge operation will sort each pair of element at the correct
+        order and combine with other pair into bigger and bigger partition until all pairs have been
+        merged back into the original list with the correct ordering. The merge operations take O(N)
+        and occur about log N times until the final sorted list is produced.
         """
         # Get leaderboard data
         self.players: ArrayList[Player] = LeaderboardReader.read(campus_name)
@@ -71,10 +68,9 @@ class Leaderboard:
         Best and worst case time complexity is O(N+M) where N is the number of players inside the current
         leaderboard and M is the number of players inside the other leaderboard.
         Best and worst case happens when both leaderboard lists are sorted descendingly based on score
-        and stamina. This happens because each player in both list are compared side by side from the
-        first players in each list until the last player and added to the final leaderboard list. This
-        process happens about N + M times as each player of both list are compared. As a result, the
-        function takes O(N+M) time to combine the leaderboards.
+        and stamina. All N and M players from both lists are compared starting from the first player of
+        each list to determine the player with the higher score and higher stamina. Each players are then
+        added one by one to the output list. The process takes O(N+M) time.
         """
         # Merge two leaderboards in descending order prioritizing the first list items for equal keys of the first and second list
         self.players = merge_sort.merge(
