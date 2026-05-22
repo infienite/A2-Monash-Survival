@@ -26,8 +26,8 @@ class Exploration:
         Best case happens when the first location has 0 connection to other locations. In this case,
         the function run once and halts regardless of the number of stamina of the student.
 
-        Worst case time complexity is O(N+C), where N is the number of location visited until the
-        stamina finishes or until a location with 0 connection to other locations. C is the total
+        Worst case time complexity is O(N+C) where N is the number of location visited until the
+        stamina finishes or until a location with 0 connection to other locations and C is the total
         number of connections outgoing from all locations visited.
         Worst case happens when there are N locations which contains connection to other location
         bounded by the number of stamina. At each location starting from the first location, Ci
@@ -189,13 +189,15 @@ if __name__ == "__main__":
         clayton.greedy_student(clayton.campus.get_location_by_name("Campus Centre"), 4)
         == 54
     ), "Greedy student should collect 54 reward"
-    print(clayton.total_difficulty(clayton.campus.get_location_by_name("New Horizons")))
+    # print(clayton.total_difficulty(clayton.campus.get_location_by_name("New Horizons")))
 
     # assert clayton.total_difficulty(clayton.campus.get_start_location()) == 190, "Total difficulty should be 190"
     assert clayton.total_reward_for_longest_path(clayton.campus.get_start_location()) == 86, "Longest path should be 86"
     assert clayton.total_reward_for_longest_path(clayton.campus.get_start_location()) == 86, "Longest path should be 86"
-    print(clayton.total_reward_for_longest_path(clayton.campus.get_location_by_name('Monash Club')))
+    # print(clayton.total_reward_for_longest_path(clayton.campus.get_location_by_name('Monash Club')))
     # assert clayton.greedy_student(clayton.campus.get_location_by_name('New Horizons'), 3) == 13, "Greedy student should collect 13 reward"
+
+    
 
     # Add test code here
     # print("Clayton")
